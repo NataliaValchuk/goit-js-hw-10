@@ -18,3 +18,15 @@ body {
   max-width: 320px;
   margin-bottom: 16px;
 }
+
+li {
+  list-style: none;
+}
+ul {
+  padding-inline-start: 0px;
+}
+.title {
+  white-space: nowrap;
+  font-size: 26px;
+  font-weight: 700;
+}
