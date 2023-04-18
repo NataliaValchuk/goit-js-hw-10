@@ -48,7 +48,10 @@ const searchInput = e => {
 <span class="title"> ${country.name.official}</span></p>
 <p><strong>Capital:</strong> ${country.capital.join(', ')}</p>
 <p><strong>Population:</strong> ${country.population}</p>
-<p><strong>Languages:</strong> ${Object.keys(country.languages)}</p>`;
+
+<p><strong>Languages:</strong> ${Object.values(country.languages).join(
+        ', '
+      )}</p>`;
     })
     .catch(error => {
       Notiflix.Notify.failure('Oops, there is no country with that name');
