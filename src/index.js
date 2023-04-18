@@ -8,13 +8,19 @@ const searchBox = document.querySelector('#search-box');
 const countryList = document.querySelector('.country-list');
 const countryInfo = document.querySelector('.country-info');
 
+const cleanMarkup = () => {
+  countryInfo.innerHTML = '';
+};
+
 const searchInput = e => {
   const searchCountry = e.target.value.trim();
   if (searchCountry === '') {
-    countryInfo.innerHTML = '';
+    cleanMarkup();
     countryList.innerHTML = '';
     return;
   }
+
+  cleanMarkup();
 
   fetchCountries(searchCountry)
     .then(countries => {
@@ -24,11 +30,11 @@ const searchInput = e => {
         );
         return;
       }
-      let result = countries.findIndex(
+
+      let result = countries.filter(
         el => el.name.official.toUpperCase() === searchCountry.toUpperCase()
       );
       if (countries.length > 1 && countries.length <= 10 && result) {
-        countryInfo.innerHTML = '';
         countryList.innerHTML = countries
           .map(
             e =>
@@ -40,23 +46,26 @@ const searchInput = e => {
       if (result) {
         result = 0;
       }
-      const country = countries[result];
-      countryList.innerHTML = '';
-      countryInfo.innerHTML = `<p><img src="${
-        country.flags.svg
-      }" alt="flag" height="25">
-<span class="title"> ${country.name.official}</span></p>
-<p><strong>Capital:</strong> ${country.capital.join(', ')}</p>
-<p><strong>Population:</strong> ${country.population}</p>
 
-<p><strong>Languages:</strong> ${Object.values(country.languages).join(
-        ', '
-      )}</p>`;
+      const country = countries[result];
+
+      countryList.innerHTML = '';
+      countryInfo.innerHTML = `<p><img src="${country.flags.svg}"
+       alt="flag" height="25">
+       <span class="title"> ${country.name.official}</span></p>
+       <p><strong>Capital:</strong> ${country.capital.join(', ')}</p>
+       <p><strong>Population:</strong> ${country.population}</p>
+       <p><strong>Languages:</strong> ${Object.values(country.languages).join(', ')}</p>`;
     })
     .catch(error => {
-      Notiflix.Notify.failure('Oops, there is no country with that name');
-      return;
+      if (error.status && error.status === 404) {
+        Notiflix.Notify.failure('Oops, there is no country with that name');
+      } else {
+        Notiflix.Notify.failure('Oops, something went wrong!');
+      }
+      console.error(error);
     });
 };
 
-searchBox.addEventListener('keydown', debounce(searchInput, DEBOUNCE_DELAY));
+searchBox.addEventListener('input', debounce(searchInput, DEBOUNCE_DELAY));
+
